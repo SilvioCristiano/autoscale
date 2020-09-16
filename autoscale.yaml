@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apache-deployment
+  labels:
+    app: apache
+spec:
+  replicas: 3
+  minReadySeconds: 60
+  revisionHistoryLimit: 10
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 50%
+      maxSurge: 25%
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: apache
+  template:
+    metadata:
+      labels:
+        app: apache
+    spec:
+      containers:
+      - name: apache
+        image: iad.ocir.io/oraclemetodista/oke/autoscale:v1
+        resources:
+          requests:
+            cpu: "200m"
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+        - name: ocirsecret
